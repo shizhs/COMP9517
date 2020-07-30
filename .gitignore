@@ -1,1 +1,3 @@
 Image_Sequences/*
+.ipynb_checkpoints/*
+__pycache__/*
