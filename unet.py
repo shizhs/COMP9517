@@ -70,7 +70,8 @@ def train(model, train_dl, valid_dl, loss_fn, optimizer, acc_fn, epochs=1):
         print('Epoch {}/{}'.format(epoch, epochs - 1))
         print('-' * 10)
 
-        for phase in ['train', 'valid']:
+        #for phase in ['train', 'valid']:
+        for phase in ['train']:
             if phase == 'train':
                 model.train(True)  # Set trainind mode = true
                 dataloader = train_dl
@@ -84,7 +85,8 @@ def train(model, train_dl, valid_dl, loss_fn, optimizer, acc_fn, epochs=1):
             step = 0
 
             # iterate over data
-            for x, y in dataloader:
+            #for x, y in dataloader:
+            for x, y in train_dl:
                 #x = x.cuda()
                 #y = y.cuda()
                 x = x.to('cpu')
