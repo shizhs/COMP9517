@@ -17,8 +17,8 @@ class UNET(nn.Module):
         self.upconv2 = self.expand_block(64*2, 32, 3, 1)
         self.upconv1 = self.expand_block(32*2, out_channels, 3, 1)
 
-    #def __call__(self, x):
-    def forward(self, x):
+    #def forward(self, x):
+    def __call__(self, x):
 
         # downsampling part
         conv1 = self.conv1(x)

@@ -17,9 +17,9 @@ from pdb import set_trace as bp
 path = "./Image_Sequences/PhC-C2DL-PSC/Sequence 1/t098.tif"
 mask_path = "./Image_Sequences/PhC-C2DL-PSC/Sequence 1 Masks/t098mask.tif"
 
-image = mpimg.imread(path)
+image = mpimg.imread(path).astype(np.float64)
 #mask = Image.open(mask_path)
-mask = mpimg.imread(mask_path).astype(np.uint8)
+mask = mpimg.imread(mask_path).astype(np.float64)
 
 class DogDataset3(Dataset):
     '''
@@ -69,15 +69,19 @@ class DogDataset3(Dataset):
 train_ds = DogDataset3(image, mask)
 
 # Initialize the dataloader
-trainloader = DataLoader(train_ds[10], batch_size=2, shuffle=False, num_workers=0)
-for x, y in trainloader:
-    print(len(x))
-    print(type(x))
-    print(x.shape)
-    print(y.shape)
-    #print(np.asarray([x]))
-    #print(torch.tensor(np.array([x])).shape)
-    #print(torch.tensor([y]).shape)
+trainloader = DataLoader(train_ds[13], batch_size=3, shuffle=False)
+#trainloader = DataLoader(train_ds[10], batch_size=3, shuffle=False, num_workers=0)
+#trainloader = DataLoader(torch.transpose(train_ds[10], 0, 1), batch_size=2, shuffle=False, num_workers=0)
+#for data in trainloader:
+#    bp()
+#    for x, y in torch.transpose(data, 0, 1):
+#        print(len(x))
+#        print(type(x))
+#        print(x.shape)
+#        print(y.shape)
+        #print(np.asarray([x]))
+        #print(torch.tensor(np.array([x])).shape)
+        #print(torch.tensor([y]).shape)
 #x, y = trainloader
 
 def acc_fn(y, y_true):
@@ -85,7 +89,7 @@ def acc_fn(y, y_true):
 
 model = UNET(1, 1).to('cpu')
 
-testloader = DataLoader(x, batch_size=10, shuffle=False, num_workers=0)
+#testloader = DataLoader(x, batch_size=10, shuffle=False, num_workers=0)
 #print(model([x]))
 
 
@@ -94,17 +98,17 @@ optimizer = torch.optim.Adam(model.parameters(),eps=0.000001,lr=0.0001,
 loss = nn.CrossEntropyLoss()
 #train(model, trainloader, [0], loss, optimizer, acc_fn, 1)
 
+train_net(model, trainloader, loss, optimizer, 1)
+
 for data in testloader:
     print(data.shape)
     model.eval()
-    bp()
-    train_net(model, data, loss, optimizer, 1)
     with torch.no_grad():
         #for data, target in test_loader:
         #    data, target = data.to(device), target.to(device)
         #    output = model(data)
             # sum up batch loss
-        for x in data:
+        for x, y in data:
             x = x.to('cpu')
             bp()
             print(model(x))
