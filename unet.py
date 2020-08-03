@@ -17,7 +17,8 @@ class UNET(nn.Module):
         self.upconv2 = self.expand_block(64*2, 32, 3, 1)
         self.upconv1 = self.expand_block(32*2, out_channels, 3, 1)
 
-    def __call__(self, x):
+    #def __call__(self, x):
+    def forward(self, x):
 
         # downsampling part
         conv1 = self.conv1(x)
@@ -47,14 +48,15 @@ class UNET(nn.Module):
 
     def expand_block(self, in_channels, out_channels, kernel_size, padding):
 
-        expand = nn.Sequential(torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=padding),
-                            torch.nn.BatchNorm2d(out_channels),
-                            torch.nn.ReLU(),
-                            torch.nn.Conv2d(out_channels, out_channels, kernel_size, stride=1, padding=padding),
-                            torch.nn.BatchNorm2d(out_channels),
-                            torch.nn.ReLU(),
-                            torch.nn.ConvTranspose2d(out_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=1) 
-                            )
+        expand = nn.Sequential(
+            torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=padding),
+            torch.nn.BatchNorm2d(out_channels),
+            torch.nn.ReLU(),
+            torch.nn.Conv2d(out_channels, out_channels, kernel_size, stride=1, padding=padding),
+            torch.nn.BatchNorm2d(out_channels),
+            torch.nn.ReLU(),
+            torch.nn.ConvTranspose2d(out_channels, out_channels, kernel_size=3, stride=2, padding=1, output_padding=1)
+        )
         return expand
 
 def train(model, train_dl, valid_dl, loss_fn, optimizer, acc_fn, epochs=1):
@@ -86,19 +88,21 @@ def train(model, train_dl, valid_dl, loss_fn, optimizer, acc_fn, epochs=1):
 
             # iterate over data
             #for x, y in dataloader:
+            #for x, y in train_dl:
+            #for a in train_dl:
             for x, y in train_dl:
                 #x = x.cuda()
                 #y = y.cuda()
-                x = x.to('cpu')
-                y = y.to('cpu')
+                x = a.to('cpu')
+                y = a.to('cpu')
                 step += 1
 
                 # forward pass
                 if phase == 'train':
                     # zero the gradients
                     optimizer.zero_grad()
-                    outputs = model(x)
-                    loss = loss_fn(outputs, y)
+                    outputs = model(x[:])
+                    loss = loss_fn(outputs, y[:])
 
                     # the backward pass frees the graph memory, so there is no 
                     # need for torch.no_grad in this training pass

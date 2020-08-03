@@ -6,10 +6,17 @@ def train_net(model, train_dl, loss_fn, optimizer, epochs):
         model.train(True)  # Set trainind mode = true
         dataloader = train_dl
 
+        #for x, y in train_dl:
+        #for a in train_dl:
+        #    x = a[0][0]
+        #    y = a[0][1]
         for x, y in train_dl:
+
             optimizer.zero_grad()
             outputs = model(x)
             loss = loss_fn(outputs, y)
+            #outputs = model(torch.tensor([[  x ] ]))
+            #loss = loss_fn(outputs, torch.tensor([[  y ] ]))
 
             # the backward pass frees the graph memory, so there is no 
             # need for torch.no_grad in this training pass
