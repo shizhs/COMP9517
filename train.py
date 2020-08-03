@@ -8,16 +8,19 @@ def train_net(model, train_dl, loss_fn, optimizer, epochs):
     #for a in train_dl:
     #    x = a[0][0]
     #    y = a[0][1]
-    #bp()
+    bp()
     #for x, y in train_dl:
     for a in train_dl:
         #x = x.long()
         #y = y.long()
-        x = a[:, 0]
-        y = a[:, 1]
+        #x = a[:, 0].float().unsqueeze(1).to('cpu')
+        #y = a[:, 1].float().unsqueeze(1).to('cpu')
+        x = a[:, 0].float()
+        y = a[:, 1].float()
         optimizer.zero_grad()
         bp()
-        outputs = model(x.unsqueeze(1))
+        outputs = model(x)
+        #outputs = model(x.unsqueeze(1))
         loss = loss_fn(outputs, y)
         #outputs = model(torch.tensor([[  x ] ]))
         #loss = loss_fn(outputs, torch.tensor([[  y ] ]))

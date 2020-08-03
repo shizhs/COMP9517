@@ -59,11 +59,12 @@ class DogDataset3(Dataset):
         images_aug = p.sample(idx)
         
         # Get augmented image
-        augmented_image = images_aug
+        augmented_image = torch.tensor(images_aug)
         
         # convert to tensor and return the result
         #return TF.to_tensor(augmented_image)
-        return torch.tensor(augmented_image)
+        #bp()
+        return augmented_image.unsqueeze(2)
 
 
 train_ds = DogDataset3(image, mask)
@@ -88,6 +89,7 @@ def acc_fn(y, y_true):
     return 0
 
 model = UNET(1, 1).to('cpu')
+#model = UNET(1, 1).to('cpu')
 
 #testloader = DataLoader(x, batch_size=10, shuffle=False, num_workers=0)
 #print(model([x]))
@@ -98,17 +100,18 @@ optimizer = torch.optim.Adam(model.parameters(),eps=0.000001,lr=0.0001,
 loss = nn.CrossEntropyLoss()
 #train(model, trainloader, [0], loss, optimizer, acc_fn, 1)
 
-train_net(model, trainloader, loss, optimizer, 1)
+#train_net(model, trainloader, loss, optimizer, 1)
 
-for data in testloader:
+for data in trainloader:
     print(data.shape)
     model.eval()
+    bp()
     with torch.no_grad():
         #for data, target in test_loader:
         #    data, target = data.to(device), target.to(device)
         #    output = model(data)
             # sum up batch loss
-        for x, y in data:
+        for x, y in torch.transpose(data, 0, 1):
             x = x.to('cpu')
             bp()
             print(model(x))
