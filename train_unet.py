@@ -102,20 +102,26 @@ class DogDataset3(Dataset):
         images_aug = p.sample(idx)
         
         # Get augmented image
-        augmented_image = torch.tensor(images_aug)
-        
-        # convert to tensor and return the result
-        #bp()
-        return augmented_image.unsqueeze(2)
+        return images_aug
+        #augmented_image = torch.tensor(images_aug)
+        #
+        ## convert to tensor and return the result
+        ##bp()
+        #return augmented_image.unsqueeze(2)
 
-def train(model, imgs, masks, optimizer): 
+def train(model, imgs, masks, optimizer, epochs): 
+    dataset = []
     for img, mask in zip(imgs, masks):
         print('change img')
         train_ds = DogDataset3(img, mask)
-        data_set = train_ds[50]
-        train_dataset = torch.utils.data.TensorDataset(data_set[:, 0], data_set[:, 1])
-        trainloader = DataLoader(train_dataset, batch_size=5, shuffle=False)
+        data_set.append(train_ds[50])
 
+    data_set = torch.tensor(data_set).unsqueeze(2)
+    bp()
+    train_dataset = torch.utils.data.TensorDataset(data_set[:, 0], data_set[:, 1])
+    trainloader = DataLoader(train_dataset, batch_size=5, shuffle=False)
+
+    for i in epochs:
         for data, target in trainloader:
             optimizer.zero_grad()    # zero the gradients
             output = model(data)       # apply network
