@@ -112,12 +112,12 @@ correct=0
 for data, target in trainloader:
     optimizer.zero_grad()    # zero the gradients
     output = model(data)       # apply network
-    #bp()
+    bp()
     #loss = nn.CrossEntropyLoss(output, target)
-    loss = F.mse_loss(output, target)
+    loss = F.nll_loss(output, target)
+    print(loss)
     loss.backward()          # compute gradients
     optimizer.step()         # update weights
-    total += target.size()[0]
 
 #if epoch % 100 == 0:
 #    print('ep:%5d loss: %6.4f acc: %5.2f' %
