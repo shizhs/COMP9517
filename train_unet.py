@@ -95,6 +95,7 @@ class DogDataset3(Dataset):
         p.rotate(0.8, max_left_rotation=10, max_right_rotation=10) # rotate the image with 50% probability
         p.shear(0.5, max_shear_left = 10, max_shear_right = 10) # shear the image with 50% probability
         p.flip_random(0.5)
+        #p.random_brightness(0.5, 0.9, 1.1)
 
         # Sample from augmentation pipeline
         images_aug = p.sample(idx)
@@ -112,29 +113,30 @@ class DogDataset3(Dataset):
 
 def train(model, imgs, masks, optimizer, epochs): 
     print('start training')
-    dataset = []
-    counter =0
-    for img, mask in zip(imgs, masks):
-        print('change img ', counter)
-        counter += 1
-        train_ds = DogDataset3(img, mask)
-        #dataset.append(train_ds[50])
-        dataset += train_ds[50]
+    #dataset = []
+    #counter =0
+    #for img, mask in zip(imgs, masks):
+    #    print('change img ', counter)
+    #    counter += 1
+    #    train_ds = DogDataset3(img, mask)
+    #    #dataset.append(train_ds[50])
+    #    dataset += train_ds[50]
 
-    dataset = torch.tensor(dataset).unsqueeze(2)
+    #dataset = torch.tensor(dataset).unsqueeze(2)
     #bp()
-    train_dataset = torch.utils.data.TensorDataset(dataset[:, 0], dataset[:, 1])
-    trainloader = DataLoader(train_dataset, batch_size=5, shuffle=True)
+    #train_dataset = torch.utils.data.TensorDataset(dataset[:, 0], dataset[:, 1])
+    #trainloader = DataLoader(train_dataset, batch_size=5, shuffle=True)
 
     for i in range(epochs):
         batch = 0
+        print('epoch ', i)
         for data, target in trainloader:
             optimizer.zero_grad()    # zero the gradients
             output = model(data)       # apply network
-            bp()
             #loss = nn.CrossEntropyLoss(output, target)
             loss = F.mse_loss(output, target)
-            #loss = F.nll_loss(output, target)
+            #loss = F.cross_entropy(torch.flatten(output, end_dim=-2), torch.flatten(target, end_dim=-2))
+            #loss = F.nll_loss(torch.flatten(output, end_dim=-2), torch.flatten(target, end_dim=-2))
             batch += 1
             print('batch %int training loss: ', batch, loss)
             loss.backward()          # compute gradients
@@ -153,25 +155,47 @@ def test(model, data):
             plt.show()
 
 ##
-model = UNET(1, 1).to('cpu')
-optimizer = torch.optim.Adam(model.parameters(),eps=0.000001,lr=0.0001,
-                                 betas=(0.9,0.999),weight_decay=0.0001)
+dataset = []
+counter =0
+for img, mask in zip(imgs, masks):
+    print('change img ', counter)
+    counter += 1
+    train_ds = DogDataset3(img, mask)
+    #dataset.append(train_ds[50])
+    dataset += train_ds[20]
+
+dataset = torch.tensor(dataset).unsqueeze(2)
+#bp()
+train_dataset = torch.utils.data.TensorDataset(dataset[:, 0], dataset[:, 1])
+trainloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 
 ##
-train(model, imgs, masks, optimizer, 5)
+model = UNET(1, 1).to('cpu')
+#optimizer = torch.optim.Adam(model.parameters(),eps=0.000001,lr=0.0001, betas=(0.9,0.999),weight_decay=0.0001)
+#optimizer = torch.optim.Adam(model.parameters(), lr=0.0005)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9,0.999))
+
+##
+train(model, imgs, masks, optimizer, 1)
 
 ##
 #test_imgs = normalize(test_imgs)
 #test(model, torch.tensor(test_imgs[:3]).unsqueeze(1))
 #test(model, torch.tensor(test_imgs[:3]))
-test(model, test_imgs[5:10])
+test(model, test_imgs[15:19])
+#test(model, torch.tensor(imgs[:3]).unsqueeze(1))
+##
+
+torch.save(model, './models/M4')
+
+
 ##
 
 
-train_ds = DogDataset3(image, mask)
-
-# Initialize the dataloader
-data_set = train_ds[13]
-train_dataset = torch.utils.data.TensorDataset(data_set[:, 0],data_set[:, 1])
-trainloader = DataLoader(train_dataset, batch_size=3, shuffle=False)
-#bp()
+#train_ds = DogDataset3(image, mask)
+#
+## Initialize the dataloader
+#data_set = train_ds[13]
+#train_dataset = torch.utils.data.TensorDataset(data_set[:, 0],data_set[:, 1])
+#trainloader = DataLoader(train_dataset, batch_size=3, shuffle=False)
+##bp()
