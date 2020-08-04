@@ -11,6 +11,7 @@ from train import train_net
 from torchvision import transforms, utils, datasets
 import torchvision
 import matplotlib.image as mpimg
+import torch.nn.functional as F
 from pdb import set_trace as bp
 
 
@@ -65,12 +66,16 @@ class DogDataset3(Dataset):
         #return TF.to_tensor(augmented_image)
         #bp()
         return augmented_image.unsqueeze(2)
+        #return augmented_image
 
 
 train_ds = DogDataset3(image, mask)
 
 # Initialize the dataloader
-trainloader = DataLoader(train_ds[13], batch_size=3, shuffle=False)
+data_set = train_ds[13]
+train_dataset = torch.utils.data.TensorDataset(data_set[:, 0],data_set[:, 1])
+trainloader = DataLoader(train_dataset, batch_size=3, shuffle=False)
+#bp()
 #trainloader = DataLoader(train_ds[10], batch_size=3, shuffle=False, num_workers=0)
 #trainloader = DataLoader(torch.transpose(train_ds[10], 0, 1), batch_size=2, shuffle=False, num_workers=0)
 #for data in trainloader:
@@ -80,10 +85,10 @@ trainloader = DataLoader(train_ds[13], batch_size=3, shuffle=False)
 #        print(type(x))
 #        print(x.shape)
 #        print(y.shape)
-        #print(np.asarray([x]))
-        #print(torch.tensor(np.array([x])).shape)
-        #print(torch.tensor([y]).shape)
-#x, y = trainloader
+#        print(np.asarray([x]))
+#        print(torch.tensor(np.array([x])).shape)
+#        print(torch.tensor([y]).shape)
+#x, y = rainloader
 
 def acc_fn(y, y_true):
     return 0
@@ -101,20 +106,45 @@ loss = nn.CrossEntropyLoss()
 #train(model, trainloader, [0], loss, optimizer, acc_fn, 1)
 
 #train_net(model, trainloader, loss, optimizer, 1)
+total=0
+correct=0
+#for batch_id, (data,target) in enumerate(train_loader):
+for data, target in trainloader:
+    optimizer.zero_grad()    # zero the gradients
+    output = model(data)       # apply network
+    #bp()
+    #loss = nn.CrossEntropyLoss(output, target)
+    loss = F.mse_loss(output, target)
+    loss.backward()          # compute gradients
+    optimizer.step()         # update weights
+    total += target.size()[0]
 
-for data in trainloader:
-    print(data.shape)
-    model.eval()
-    bp()
-    with torch.no_grad():
-        #for data, target in test_loader:
-        #    data, target = data.to(device), target.to(device)
-        #    output = model(data)
-            # sum up batch loss
-        for x, y in torch.transpose(data, 0, 1):
-            x = x.to('cpu')
-            bp()
-            print(model(x))
+#if epoch % 100 == 0:
+#    print('ep:%5d loss: %6.4f acc: %5.2f' %
+#         (epoch,loss.item(),accuracy))
+
+print(accuracy)
+
+#for data in trainloader:
+#for x, y in trainloader:
+#    #print(data.shape)
+#    model.eval()
+#    #bp()
+#    with torch.no_grad():
+#        #for data, target in test_loader:
+#        #    data, target = data.to(device), target.to(device)
+#        #    output = model(data)
+#            # sum up batch loss
+#        #for a in data:
+#        #x = x.long()
+#        #y = y.long()
+#        #x = a[:, 0].float().unsqueeze(1).to('cpu')
+#        #y = a[:, 1].float().unsqueeze(1).to('cpu')
+#        #x = a[:, 0].float()
+#        #y = a[:, 1].float()
+#        #for x, y in torch.transpose(data, 0, 1):
+#        x = x.to('cpu')
+#        print(model(x))
 
 
 
