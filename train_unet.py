@@ -42,9 +42,9 @@ imgs, masks = find_traning_data(mask_path, img_path)
 test_imgs = []
 for i in range(84):
     if i < 10 :
-        test_imgs.append(mpimg.imread(img_path +'t00'+ str(i) + '.tif').astype(np.float64))
+        test_imgs.append(torch.tensor(mpimg.imread(img_path +'t00'+ str(i) + '.tif').astype(np.float64)).unsqueeze(0))
     else:
-        test_imgs.append(mpimg.imread(img_path +'t0'+ str(i) + '.tif').astype(np.float64))
+        test_imgs.append(torch.tensor(mpimg.imread(img_path +'t0'+ str(i) + '.tif').astype(np.float64)).unsqueeze(0))
 ##
 
 #image = mpimg.imread(path).astype(np.float64)
@@ -109,12 +109,12 @@ def test(model, data):
     model.eval()
     with torch.no_grad():
         for x in data:
-            output = model(x)
+            output = model(x.float().unsqueeze(0))
             fig=plt.figure(figsize=(10, 10))
             fig.add_subplot(2, 1, 1)
-            plt.imshow(x)
+            plt.imshow(x[0])
             fig.add_subplot(2, 1, 2)
-            plt.imshow(output)
+            plt.imshow(output[0][0])
             plt.show()
 
 ##
@@ -125,7 +125,8 @@ optimizer = torch.optim.Adam(model.parameters(),eps=0.000001,lr=0.0001,
 ##
 train(model, imgs, masks, optimizer)
 ##
-test(model, torch.tensor(test_imgs[:3]))
+test(model, test_imgs[:3])
+#test(model, torch.tensor(test_imgs[:3]))
 ##
 
 
