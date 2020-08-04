@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
-from unet import UNET, train
+from unet import UNET
 from torch import nn
 from train import train_net
 from torchvision import transforms, utils, datasets
@@ -13,8 +13,6 @@ import torchvision
 import matplotlib.image as mpimg
 import torch.nn.functional as F
 from pdb import set_trace as bp
-
-path = "./Image_Sequences/PhC-C2DL-PSC/Sequence 1/t098.tif"
 
 def normalize(v): 
     norm = np.linalg.norm(v) 
@@ -71,7 +69,7 @@ for i in range(84):
 ##
 
 #image = mpimg.imread(path).astype(np.float64)
-##mask = Image.open(mask_path)
+#mask = Image.open(mask_path)
 #mask = mpimg.imread(mask_path).astype(np.float64)
 
 class DogDataset3(Dataset):
@@ -102,34 +100,43 @@ class DogDataset3(Dataset):
         images_aug = p.sample(idx)
         
         # Get augmented image
-        return images_aug
         #augmented_image = torch.tensor(images_aug)
         #
-        ## convert to tensor and return the result
-        ##bp()
+        # convert to tensor and return the result
+        #bp()
         #return augmented_image.unsqueeze(2)
+        return images_aug
+
+
+##
 
 def train(model, imgs, masks, optimizer, epochs): 
+    print('start training')
     dataset = []
+    counter =0
     for img, mask in zip(imgs, masks):
-        print('change img')
+        print('change img ', counter)
+        counter += 1
         train_ds = DogDataset3(img, mask)
-        data_set.append(train_ds[50])
+        #dataset.append(train_ds[50])
+        dataset += train_ds[50]
 
-    data_set = torch.tensor(data_set).unsqueeze(2)
-    bp()
-    train_dataset = torch.utils.data.TensorDataset(data_set[:, 0], data_set[:, 1])
-    trainloader = DataLoader(train_dataset, batch_size=5, shuffle=False)
+    dataset = torch.tensor(dataset).unsqueeze(2)
+    #bp()
+    train_dataset = torch.utils.data.TensorDataset(dataset[:, 0], dataset[:, 1])
+    trainloader = DataLoader(train_dataset, batch_size=5, shuffle=True)
 
-    for i in epochs:
+    for i in range(epochs):
+        batch = 0
         for data, target in trainloader:
             optimizer.zero_grad()    # zero the gradients
             output = model(data)       # apply network
-            #bp()
+            bp()
             #loss = nn.CrossEntropyLoss(output, target)
             loss = F.mse_loss(output, target)
             #loss = F.nll_loss(output, target)
-            print('training loss: ', loss)
+            batch += 1
+            print('batch %int training loss: ', batch, loss)
             loss.backward()          # compute gradients
             optimizer.step()         # update weights
 
@@ -151,11 +158,13 @@ optimizer = torch.optim.Adam(model.parameters(),eps=0.000001,lr=0.0001,
                                  betas=(0.9,0.999),weight_decay=0.0001)
 
 ##
-train(model, imgs, masks, optimizer)
+train(model, imgs, masks, optimizer, 5)
+
 ##
 #test_imgs = normalize(test_imgs)
 #test(model, torch.tensor(test_imgs[:3]).unsqueeze(1))
-test(model, torch.tensor(test_imgs[:3]))
+#test(model, torch.tensor(test_imgs[:3]))
+test(model, test_imgs[5:10])
 ##
 
 
