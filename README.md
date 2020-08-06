@@ -13,4 +13,5 @@ First go to the second cell and check the path is the file which contains the nu
 Run the entire notebook in order of the cells.
 ### Motion Analysis
 We use the notebook `Task3.ipynb` to do the motion analysis. 
-First go to the second cell and check the path is the file which contains the pickel file and images from the cell tracking and mitosis section. Run the entire notebook in order.
+First go to the second cell and check the path is the file which contains the pickel file and images from the cell tracking and mitosis section. 
+Run the entire notebook in order.
