@@ -10,8 +10,9 @@ Then, go to `Method-2: Use Marching Squares Algorithm` section. It contains a fu
 ### Cell Tracking
 We use the notebook `Tracking.ipynb` to track cells detected in the previous section. 
 First go to the second cell and check the path is the file which contains the numpy file and images from the cell detection section.
-Run the entire notebook in order of the cells.
+(The images and numpy file from the cell detection is in `./content/test/` for DIC,  `./content/test2/` for FLUO and `./content/test3/` for PHC by default.)
+Run the entire notebook in order of the cells. 
 ### Motion Analysis
 We use the notebook `Task3.ipynb` to do the motion analysis. 
-First go to the second cell and check the path is the file which contains the pickel file and images from the cell tracking and mitosis section. 
+First go to the second cell and check the path is the file which contains the pickel file and images from the cell tracking and mitosis section. (The images and numpy file from the cell detection is in `./mitosis/content/dic/` for DIC,  `./mitosis/content/test2/` for FLUO and `./mitosis/content/test3/` for PHC by default.)
 Run the entire notebook in order.
